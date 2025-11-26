@@ -282,13 +282,9 @@ export default function HomePage() {
     if (!infoConver?.task.task_id) return;
     LoadingService.start();
     try {
-      await FileOpenrationService.updateData(
-        infoConver?.task.task_id,
-        e.id_VNA,
-        e
-      );
+      await FileOpenrationService.updateData(infoConver?.task.task_id, e.id, e);
       setRows((prev) =>
-        prev.map((row) => (row.id_VNA === e.id_VNA ? { ...row, ...e } : row))
+        prev.map((row) => (row.id === e.id ? { ...row, ...e } : row))
       );
       NotifyService.success("update thành công");
     } catch (err: any) {
@@ -312,7 +308,7 @@ export default function HomePage() {
         value,
         infoConver?.task.task_id
       ).then((res) => {
-        setRows(res.full_data);
+        setRows(res.task.result.full_data);
       });
     } catch (err: any) {
       console.error("Có lỗi:", err);

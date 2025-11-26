@@ -13,14 +13,14 @@ export class FileOpenrationService {
   };
 
   static updateData = async (taskId: string,id: string, payload: any) => {
-    return await ApiService.post(`${FileOpenrationService.host}tasks/${taskId}/row-by-id-vna/${id}`, payload)
+    return await ApiService.post(`${FileOpenrationService.host}tasks/${taskId}/row-by-id/${id}`, payload)
   }
 
   static startConversion = async (taskId: string, payload: payloadStartCoversion): Promise<ConverData> => {
     return await ApiService.post(`${FileOpenrationService.host}start-conversion/${taskId}`, payload)
   }
 
-  static filterStatus = async (status: string, taskId: string ): Promise<ResultData> => {
+  static filterStatus = async (status: string, taskId: string ): Promise<ConverData> => {
      return await ApiService.get(`${FileOpenrationService.host}tasks/${taskId}/filtered-data?filter_status=${status}`)
   }
 
