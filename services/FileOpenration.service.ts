@@ -1,5 +1,5 @@
 import { ApiService } from "@/core/components/services/api/api.service";
-import { ConverData, payloadStartCoversion, PropsReq } from "@/models/type";
+import { ConverData, payloadStartCoversion, PropsReq, ResultData } from "@/models/type";
 
 export class FileOpenrationService {
   static readonly host = process.env.NEXT_PUBLIC_HOST;
@@ -12,25 +12,33 @@ export class FileOpenrationService {
     );
   };
 
-  static startConversion = async (taskId: string, payload: payloadStartCoversion): Promise<ConverData> =>{
-    return await ApiService.post(`${FileOpenrationService.host}start-conversion/${taskId}`,payload)
+  static updateData = async (taskId: string,id: string, payload: any) => {
+    return await ApiService.post(`${FileOpenrationService.host}tasks/${taskId}/row-by-id-vna/${id}`, payload)
   }
 
-  static exportData = async(taskId: string, fileName: string) =>{
+  static startConversion = async (taskId: string, payload: payloadStartCoversion): Promise<ConverData> => {
+    return await ApiService.post(`${FileOpenrationService.host}start-conversion/${taskId}`, payload)
+  }
+
+  static filterStatus = async (status: string, taskId: string ): Promise<ResultData> => {
+     return await ApiService.get(`${FileOpenrationService.host}tasks/${taskId}/filtered-data?filter_status=${status}`)
+  }
+
+  static exportData = async (taskId: string, fileName: string) => {
     const blob = await ApiService.getFile<Blob>(
-    `${FileOpenrationService.host}download-and-save/${taskId}`
-  );
+      `${FileOpenrationService.host}download-and-save/${taskId}`
+    );
 
-  // Tạo link download
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
+    // Tạo link download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
 
-  // Có thể lấy tên file từ header "Content-Disposition" nếu backend set
-  a.download = fileName ? fileName : `result-${taskId}.xlsx`; // tuỳ bạn đặt
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  window.URL.revokeObjectURL(url);
+    // Có thể lấy tên file từ header "Content-Disposition" nếu backend set
+    a.download = fileName ? fileName : `result-${taskId}.xlsx`; // tuỳ bạn đặt
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   }
 }

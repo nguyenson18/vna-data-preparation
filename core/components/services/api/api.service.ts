@@ -33,14 +33,11 @@ const get = async <T = any>(path: string, params?: any): Promise<T> => {
     const headers: HeadersInit = {
         'Content-Type': 'application/json',
     };
-    // XỬ LÝ CACHING TRÁNH GỌI VỀ SERVER NHIỀU LẦN CÙNG 1 REQUEST
-    const key = hash({
+    const response = await fetch(url.toString(), {
         method: 'GET',
-        url,
-        headers,
-        params,
+        headers: headers,
     });
-    const res = await firstValueFrom(CACHE[key].subject);
+    const res = await response.json();
     handleResponse(res);
     return res?.data;
 };

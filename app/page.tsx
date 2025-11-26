@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   AppBar,
   Avatar,
@@ -43,6 +43,7 @@ import {
 } from "@/models/type";
 import * as uuid from "uuid";
 import { EmployeeMappingTable } from "@/components/EmployeeMappingTable";
+import ConverLocationDetail from "@/components/popups/conver-location-detail";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -73,10 +74,24 @@ function a11yProps(index: number) {
   };
 }
 
+const statusComfig = [
+  {
+    value: "all",
+    display: "Tất cả",
+  },
+  {
+    value: "success",
+    display: "Thành công",
+  },
+  {
+    value: "error",
+    display: "Lỗi",
+  },
+];
+
 export default function HomePage() {
   const [wb, setWb] = useState<WorkbookData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [value, setValue] = useState(0);
+  const [valueTab, setValueTab] = useState(0);
   const [fileName, setFileName] = useState<string | null>(null);
   const [file, setFile] = useState();
   const [activeStep, setActiveStep] = useState(0);
@@ -86,17 +101,20 @@ export default function HomePage() {
   const [anchorElMenu, setAnchorElMenu] = useState<null | HTMLElement>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [worker, setWorker] = useState<string>("1");
-  const [columns, setColumns] = useState<any[]>([]);
+  const [columns, setColumns] = useState<string[]>([]);
   const [rows, setRows] = useState<any[]>([]);
   const [infoConver, setInfoConver] = useState<ConverData>();
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [row, setRow] = useState();
+  const [valueStatus, setValueStatus] = useState<string>("all");
 
   const settings = [
-    {
-      title: "Xem trước KQ",
-      onClick: (id?: any) => {
-        setAnchorElMenu(null);
-      },
-    },
+    // {
+    //   title: "Xem trước KQ",
+    //   onClick: (id?: any) => {
+    //     setAnchorElMenu(null);
+    //   },
+    // },
     {
       title: "Xóa nhóm",
       onClick: (id?: string) => {
@@ -120,12 +138,12 @@ export default function HomePage() {
     },
   ];
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+    setValueTab(newValue);
   };
 
   const onFile = useCallback(async (f: File) => {
-    setIsLoading(true);
+    LoadingService.start();
     try {
       const data = await parseFile(f);
       for (const [k, meta] of Object.entries(data.columnMeta)) {
@@ -135,7 +153,7 @@ export default function HomePage() {
     } catch (err) {
       console.log(err);
     } finally {
-      setIsLoading(false); // ⬅️ đảm bảo luôn tắt loading
+      LoadingService.stop();
     }
   }, []);
 
@@ -260,7 +278,50 @@ export default function HomePage() {
     }
   };
 
-  // console.log(groups);
+  const onAgree = async (e: any) => {
+    if (!infoConver?.task.task_id) return;
+    LoadingService.start();
+    try {
+      await FileOpenrationService.updateData(
+        infoConver?.task.task_id,
+        e.id_VNA,
+        e
+      );
+      setRows((prev) =>
+        prev.map((row) => (row.id_VNA === e.id_VNA ? { ...row, ...e } : row))
+      );
+      NotifyService.success("update thành công");
+    } catch (err: any) {
+      console.error("Có lỗi:", err);
+      NotifyService.error(err?.message || "Có lỗi xảy ra");
+    } finally {
+      LoadingService.stop();
+    }
+  };
+
+  const handleClose = () => {
+    setOpenModal(false);
+  };
+
+  const handleSelect = async (value: string) => {
+    setValueStatus(value);
+    if (!infoConver?.task.task_id) return;
+    LoadingService.start();
+    try {
+      await FileOpenrationService.filterStatus(
+        value,
+        infoConver?.task.task_id
+      ).then((res) => {
+        setRows(res.full_data);
+      });
+    } catch (err: any) {
+      console.error("Có lỗi:", err);
+      NotifyService.error(err?.message || "Có lỗi xảy ra");
+    } finally {
+      LoadingService.stop();
+    }
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       {/* <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -1000,11 +1061,38 @@ export default function HomePage() {
                     trước khi export.
                   </Typography>
                 </Box>
-                <EmployeeMappingTable columns={columns} rows={rows} />
+
+                <SdSelect
+                  label="Trạng thái"
+                  sx={{ width: "150px", mb: 1 }}
+                  value={valueStatus}
+                  items={statusComfig}
+                  sdChange={(e: any, value: any) => handleSelect(value)}
+                />
+                <EmployeeMappingTable
+                  columns={columns}
+                  rows={rows}
+                  onEditRow={(row) => {
+                    setOpenModal(true);
+                    setRow(row);
+                  }}
+                />
               </Paper>
             </>
           )}
         </Container>
+        {openModal && (
+          <ConverLocationDetail
+            openModal={openModal}
+            row={row}
+            columns={columns}
+            onClose={handleClose}
+            onAgree={(e) => {
+              onAgree(e);
+              setOpenModal(false);
+            }}
+          />
+        )}
       </Box>
     </Box>
   );
