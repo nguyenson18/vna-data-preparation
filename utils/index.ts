@@ -1,0 +1,1 @@
+export const DATE_HEADER_HINTS = new Set(['birthday', 'createddate', 'startdate']);

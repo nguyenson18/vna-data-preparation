@@ -9,13 +9,31 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/lab": "^7.0.1-beta.19",
+    "@mui/material": "^7.3.5",
+    "@mui/x-data-grid": "^8.19.0",
+    "@mui/x-date-pickers": "^8.19.0",
+    "axios": "^1.13.2",
+    "dayjs": "^1.11.19",
     "next": "16.0.3",
+    "object-hash": "^3.0.0",
+    "papaparse": "^5.5.3",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "react-hook-form": "^7.66.1",
+    "rxjs": "^7.8.2",
+    "uuid": "^13.0.0",
+    "xlsx": "^0.18.5",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/object-hash": "^3.0.6",
+    "@types/papaparse": "^5.5.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

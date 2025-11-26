@@ -1,0 +1,9 @@
+// Giảm padding input
+.extraSmall {
+  label {
+    transform: translate(14px, 7px) scale(1);
+  }
+  input {
+    padding: 5px !important;
+  }
+}
