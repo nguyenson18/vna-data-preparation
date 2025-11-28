@@ -109,12 +109,13 @@ export default function HomePage() {
   const [valueStatus, setValueStatus] = useState<string>("all");
 
   const settings = [
-    // {
-    //   title: "Xem trước KQ",
-    //   onClick: (id?: any) => {
-    //     setAnchorElMenu(null);
-    //   },
-    // },
+    {
+      title: "Xem trước KQ",
+      onClick: (id?: any) => {
+        setAnchorElMenu(null);
+        console.log(id);
+      },
+    },
     {
       title: "Xóa nhóm",
       onClick: (id?: string) => {
@@ -163,15 +164,18 @@ export default function HomePage() {
     setAnchorElMenu(event.currentTarget);
     setSelectedGroupId(id);
   };
+
   const handleCloseMenu = () => {
     setAnchorElMenu(null);
     setSelectedGroupId(null);
   };
+
   const handleDeleteGroup = (id?: string) => {
     if (id == null) return;
     setGroups((prev: TypeGroup[]) => prev?.filter((item, i) => item.id !== id));
     handleCloseMenu();
   };
+
   const handleAddGroup = () => {
     const newGroup = {
       id: uuid.v4(),
@@ -184,6 +188,7 @@ export default function HomePage() {
     };
     setGroups((prev: TypeGroup[]) => [newGroup, ...prev]);
   };
+
   const updateGroupField = useCallback(
     (groupId: string, field: keyof TypeGroup, nextValue: any) => {
       setGroups((prev) =>
@@ -209,7 +214,7 @@ export default function HomePage() {
           const cusGroup = res?.groups.map((e) => ({ id: uuid.v4(), ...e }));
           setReq(res);
           setGroups(cusGroup);
-          setSelects(res?.sample_preview?.columns);
+          setSelects(res?.all_columns);
           setActiveStep(res.step);
         });
         NotifyService.success("Upload thành công");
@@ -685,8 +690,7 @@ export default function HomePage() {
                         <More />
                       </IconButton>
                       <Menu
-                        sx={{ mt: "45px" }}
-                        id="menu-appbar"
+                        sx={{ mt: "45px", boxShadow: "none !important" }}
                         anchorEl={anchorElMenu}
                         transitionDuration={0}
                         anchorOrigin={{
@@ -1077,6 +1081,7 @@ export default function HomePage() {
             </>
           )}
         </Container>
+
         {openModal && (
           <ConverLocationDetail
             openModal={openModal}

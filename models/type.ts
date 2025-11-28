@@ -6,10 +6,6 @@ export interface PropsReq {
     md: number;
     step: number;
     suggested_workers: number;
-    sample_preview: {
-        columns: any[];
-        rows: any[];
-    };
 }
 
 export interface ConverData {

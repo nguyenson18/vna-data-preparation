@@ -12,7 +12,7 @@ export class FileOpenrationService {
     );
   };
 
-  static updateData = async (taskId: string,id: string, payload: any) => {
+  static updateData = async (taskId: string, id: string, payload: any) => {
     return await ApiService.post(`${FileOpenrationService.host}tasks/${taskId}/row-by-id/${id}`, payload)
   }
 
@@ -20,8 +20,12 @@ export class FileOpenrationService {
     return await ApiService.post(`${FileOpenrationService.host}start-conversion/${taskId}`, payload)
   }
 
-  static filterStatus = async (status: string, taskId: string ): Promise<ConverData> => {
-     return await ApiService.get(`${FileOpenrationService.host}tasks/${taskId}/filtered-data?filter_status=${status}`)
+  static filterStatus = async (status: string, taskId: string): Promise<ConverData> => {
+    return await ApiService.get(`${FileOpenrationService.host}tasks/${taskId}/filtered-data?filter_status=${status}`)
+  }
+
+  static preview = async (taskId:string, body: any) => {
+      return await ApiService.post(`${FileOpenrationService.host}tasks/${taskId}/group-preview`, body)
   }
 
   static exportData = async (taskId: string, fileName: string) => {
