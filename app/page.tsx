@@ -1124,6 +1124,8 @@ export default function HomePage() {
             }}
             onClose={() => {
               setOpenPreview(false);
+              setDataPreview([])
+              setIdGroup("")
             }}
           />
         )}
