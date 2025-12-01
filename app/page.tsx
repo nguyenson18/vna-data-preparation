@@ -44,6 +44,7 @@ import {
 import * as uuid from "uuid";
 import { EmployeeMappingTable } from "@/components/EmployeeMappingTable";
 import ConverLocationDetail from "@/components/popups/conver-location-detail";
+import { PreviewCovert } from "@/components/popups";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -107,18 +108,33 @@ export default function HomePage() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [row, setRow] = useState();
   const [valueStatus, setValueStatus] = useState<string>("all");
+  const [openPreview, setOpenPreview] = useState<boolean>(false);
+  const [dataPreview, setDataPreview] = useState<string[]>([]);
+  const [idGroup, setIdGroup] = useState<string>("")
+
+  const keys = [
+    "id_province",
+    "province",
+    "id_district",
+    "district",
+    "id_ward",
+    "ward",
+  ];
 
   const settings = [
     {
-      title: "Xem trước KQ",
-      onClick: (id?: any) => {
-        setAnchorElMenu(null);
-        console.log(id);
+      title: "Xem mẫu dữ liệu",
+      onClick: (id?: any, item?: any) => {
+        setOpenPreview(true);
+        setAnchorElMenu(null)
+        setIdGroup(id)
+        const values = keys.map((k) => item[k]);
+        setDataPreview((prev) => [...prev, ...values]);
       },
     },
     {
       title: "Xóa nhóm",
-      onClick: (id?: string) => {
+      onClick: (id?: string, item?: any) => {
         handleDeleteGroup(id);
       },
     },
@@ -207,7 +223,6 @@ export default function HomePage() {
   const handleChangeSubmit = async () => {
     if (activeStep === 0) {
       if (!file) return;
-
       LoadingService.start();
       try {
         await FileOpenrationService.upload(file).then((res) => {
@@ -322,7 +337,7 @@ export default function HomePage() {
       LoadingService.stop();
     }
   };
-
+  
   return (
     <Box sx={{ width: "100%" }}>
       {/* <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -708,7 +723,9 @@ export default function HomePage() {
                         {settings.map((setting, index) => (
                           <MenuItem
                             key={index}
-                            onClick={() => setting.onClick(selectedGroupId!)}
+                            onClick={() =>
+                              setting.onClick(selectedGroupId!, item)
+                            }
                           >
                             <Typography sx={{ textAlign: "center" }}>
                               {setting.title}
@@ -1091,6 +1108,22 @@ export default function HomePage() {
             onAgree={(e) => {
               onAgree(e);
               setOpenModal(false);
+            }}
+          />
+        )}
+        {openPreview && (
+          <PreviewCovert
+            openModal={openPreview}
+            data={{
+              group: dataPreview,
+              id_group: idGroup
+            }}
+            taskId={req?.task_id || ""}
+            onAgree={() => {
+              setOpenPreview(false);
+            }}
+            onClose={() => {
+              setOpenPreview(false);
             }}
           />
         )}
