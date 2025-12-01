@@ -57,7 +57,7 @@ export const PreviewCovert = (props: Props) => {
   };
 
   const hasData = rows.some((row) => Object.keys(row).length > 0);
-  console.log(rows, columns);
+
   return (
     <SdModal
       opened={!!openModal}
