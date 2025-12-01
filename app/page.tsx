@@ -110,7 +110,7 @@ export default function HomePage() {
   const [valueStatus, setValueStatus] = useState<string>("all");
   const [openPreview, setOpenPreview] = useState<boolean>(false);
   const [dataPreview, setDataPreview] = useState<string[]>([]);
-  const [idGroup, setIdGroup] = useState<string>("")
+  const [idGroup, setIdGroup] = useState<string>("");
 
   const keys = [
     "id_province",
@@ -126,8 +126,9 @@ export default function HomePage() {
       title: "Xem mẫu dữ liệu",
       onClick: (id?: any, item?: any) => {
         setOpenPreview(true);
-        setAnchorElMenu(null)
-        setIdGroup(id)
+        setAnchorElMenu(null);
+        setIdGroup(id);
+        console.log(item);
         const values = keys.map((k) => item[k]);
         setDataPreview((prev) => [...prev, ...values]);
       },
@@ -337,7 +338,16 @@ export default function HomePage() {
       LoadingService.stop();
     }
   };
-  
+
+  const handlePreview = () => {
+    setOpenPreview(true);
+    setAnchorElMenu(null);
+    setIdGroup(selectedGroupId || "");
+    const values: any = groups.find((item, i) => item.id === selectedGroupId);
+    const datas = keys.map((k) => values?.[k]);
+    setDataPreview((prev) => [...prev, ...datas]);
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       {/* <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -681,8 +691,8 @@ export default function HomePage() {
               </Stack>
 
               {groups?.length &&
-                groups.length > 0 &&
-                groups.map((item, index) => (
+                groups?.length > 0 &&
+                groups?.map((item: any, index) => (
                   <Stack
                     key={index}
                     sx={{
@@ -720,18 +730,23 @@ export default function HomePage() {
                         open={Boolean(anchorElMenu)}
                         onClose={handleCloseMenu}
                       >
-                        {settings.map((setting, index) => (
-                          <MenuItem
-                            key={index}
-                            onClick={() =>
-                              setting.onClick(selectedGroupId!, item)
-                            }
-                          >
-                            <Typography sx={{ textAlign: "center" }}>
-                              {setting.title}
-                            </Typography>
-                          </MenuItem>
-                        ))}
+                        <MenuItem
+                          onClick={handlePreview}
+                        >
+                          <Typography sx={{ textAlign: "center" }}>
+                            Xem mẫu dữ liệu
+                          </Typography>
+                        </MenuItem>
+
+                        <MenuItem
+                          onClick={() =>
+                            handleDeleteGroup(selectedGroupId || "")
+                          }
+                        >
+                          <Typography sx={{ textAlign: "center" }}>
+                            Xóa nhóm
+                          </Typography>
+                        </MenuItem>
                       </Menu>
                     </Stack>
 
@@ -1116,7 +1131,7 @@ export default function HomePage() {
             openModal={openPreview}
             data={{
               group: dataPreview,
-              id_group: idGroup
+              id_group: idGroup,
             }}
             taskId={req?.task_id || ""}
             onAgree={() => {
@@ -1124,8 +1139,8 @@ export default function HomePage() {
             }}
             onClose={() => {
               setOpenPreview(false);
-              setDataPreview([])
-              setIdGroup("")
+              setDataPreview((prev) => []);
+              setIdGroup("");
             }}
           />
         )}

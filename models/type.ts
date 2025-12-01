@@ -36,12 +36,12 @@ export interface ResultData {
 
 export interface TypeGroup {
     id?: string
-    id_province: string,
-    province: string,
-    id_district: string,
-    district: string,
-    id_ward: string,
-    ward: string,
+    id_province?: string,
+    province?: string,
+    id_district?: string,
+    district?: string,
+    id_ward?: string,
+    ward?: string,
 }
 export interface payloadStartCoversion {
     groups: TypeGroup[],
