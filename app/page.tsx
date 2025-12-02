@@ -221,6 +221,24 @@ export default function HomePage() {
     setFile(f);
   };
 
+    const handleDrop = (event: any) => {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (!files || !files.length) return;
+
+    // Giả lập event giống input change để tái sử dụng handleChangeFile
+    const fakeEvent = {
+      target: {
+        files,
+      },
+    };
+    handleChangeFile(fakeEvent);
+  };
+
+  const handleDragOver = (event: any) => {
+    event.preventDefault();
+  };
+
   const handleChangeSubmit = async () => {
     if (activeStep === 0) {
       if (!file) return;
@@ -566,6 +584,8 @@ export default function HomePage() {
                   p: 3,
                   bgcolor: "background.default",
                 }}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
               >
                 <Stack spacing={1.2} alignItems="center" textAlign="center">
                   <Box
@@ -730,9 +750,7 @@ export default function HomePage() {
                         open={Boolean(anchorElMenu)}
                         onClose={handleCloseMenu}
                       >
-                        <MenuItem
-                          onClick={handlePreview}
-                        >
+                        <MenuItem onClick={handlePreview}>
                           <Typography sx={{ textAlign: "center" }}>
                             Xem mẫu dữ liệu
                           </Typography>
