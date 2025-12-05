@@ -221,7 +221,7 @@ export default function HomePage() {
     setFile(f);
   };
 
-    const handleDrop = (event: any) => {
+  const handleDrop = (event: any) => {
     event.preventDefault();
     const files = event.dataTransfer.files;
     if (!files || !files.length) return;
@@ -239,7 +239,7 @@ export default function HomePage() {
     event.preventDefault();
   };
 
-  const handleChangeSubmit = async () => {
+  const handleChangeSubmitSuccess = async () => {
     if (activeStep === 0) {
       if (!file) return;
       LoadingService.start();
@@ -290,7 +290,7 @@ export default function HomePage() {
       if (!infoConver?.task.task_id) return;
       LoadingService.start();
       try {
-        await FileOpenrationService.exportData(
+        await FileOpenrationService.exportDataSuccess(
           infoConver?.task.task_id,
           infoConver.task.filename
         );
@@ -304,6 +304,23 @@ export default function HomePage() {
     }
   };
 
+  const handleChangeSubmitErr = async () => {
+    if (!infoConver?.task.task_id) return;
+    LoadingService.start();
+    try {
+      await FileOpenrationService.exportDataErr(
+        infoConver?.task.task_id,
+        infoConver.task.filename
+      );
+      NotifyService.success("Download thành công");
+    } catch (err: any) {
+      console.error("Có lỗi:", err);
+      NotifyService.error(err?.message || "Có lỗi xảy ra");
+    } finally {
+      LoadingService.stop();
+    }
+  };
+
   const renderTilte = () => {
     switch (activeStep) {
       case 0:
@@ -311,7 +328,7 @@ export default function HomePage() {
       case 1:
         return "Bắt đầu xử lý";
       case 2:
-        return "Tải file execel";
+        return "Tải file execel thành công";
       default:
         break;
     }
@@ -409,7 +426,7 @@ export default function HomePage() {
             justifyContent={"space-between"}
           >
             <Avatar alt="Remy Sharp" src="/logo.png" />
-            <Box>
+            <Stack direction={'row'} spacing={1}>
               {activeStep > 0 && (
                 <SdButton
                   label={"Trở về"}
@@ -424,9 +441,16 @@ export default function HomePage() {
               <SdButton
                 label={renderTilte()}
                 disabled={!file}
-                onClick={handleChangeSubmit}
+                onClick={handleChangeSubmitSuccess}
               />
-            </Box>
+             {activeStep === 2 && (
+               <SdButton
+                label={"Tải file execel lỗi"}
+                disabled={!file}
+                onClick={handleChangeSubmitErr}
+              />
+             )}
+            </Stack>
           </Stack>
         </Toolbar>
       </AppBar>

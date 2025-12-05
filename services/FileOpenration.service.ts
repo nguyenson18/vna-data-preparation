@@ -24,13 +24,31 @@ export class FileOpenrationService {
     return await ApiService.get(`${FileOpenrationService.host}tasks/${taskId}/filtered-data?filter_status=${status}`)
   }
 
-  static preview = async (taskId:string, body: any) => {
-      return await ApiService.post(`${FileOpenrationService.host}tasks/${taskId}/group-preview`, body)
+  static preview = async (taskId: string, body: any) => {
+    return await ApiService.post(`${FileOpenrationService.host}tasks/${taskId}/group-preview`, body)
   }
 
-  static exportData = async (taskId: string, fileName: string) => {
+  static exportDataSuccess = async (taskId: string, fileName: string) => {
     const blob = await ApiService.getFile<Blob>(
-      `${FileOpenrationService.host}download-and-save/${taskId}`
+      `${FileOpenrationService.host}download-and-save-success/${taskId}`
+    );
+
+    // Tạo link download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+
+    // Có thể lấy tên file từ header "Content-Disposition" nếu backend set
+    a.download = fileName ? fileName : `result-${taskId}.xlsx`; // tuỳ bạn đặt
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  }
+
+  static exportDataErr = async (taskId: string, fileName: string) => {
+    const blob = await ApiService.getFile<Blob>(
+      `${FileOpenrationService.host}download-and-save-error/${taskId}`
     );
 
     // Tạo link download
