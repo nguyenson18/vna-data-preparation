@@ -446,6 +446,7 @@ export default function HomePage() {
              {activeStep === 2 && (
                <SdButton
                 label={"Tải file execel lỗi"}
+                variant="outlined"
                 disabled={!file}
                 onClick={handleChangeSubmitErr}
               />
